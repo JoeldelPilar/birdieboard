@@ -405,6 +405,10 @@ export async function getMyRounds(
   limit = 20,
   offset = 0,
 ): Promise<ActionResponse<{ rounds: RoundSummary[]; total: number }>> {
+  // Clamp pagination params to safe bounds
+  limit = Math.max(1, Math.min(100, limit));
+  offset = Math.max(0, offset);
+
   const session = await auth();
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized' };

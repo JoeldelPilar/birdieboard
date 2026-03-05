@@ -201,11 +201,31 @@ export async function getMatch(matchId: string): Promise<ActionResponse<MatchWit
   }
 
   try {
+    const playerId = await getPlayerIdForSession(session.user.id);
+    if (!playerId) {
+      return { success: false, error: 'Player profile not found' };
+    }
+
     const matchResult = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
 
     const match = matchResult[0];
     if (!match) {
       return { success: false, error: 'Match not found' };
+    }
+
+    // Enforce access control for private matches
+    if (match.isPrivate) {
+      const isParticipant = await db
+        .select({ id: matchParticipants.id })
+        .from(matchParticipants)
+        .where(
+          and(eq(matchParticipants.matchId, matchId), eq(matchParticipants.playerId, playerId)),
+        )
+        .limit(1);
+
+      if (!isParticipant[0]) {
+        return { success: false, error: 'Match not found' };
+      }
     }
 
     // Fetch participants with player info
@@ -574,8 +594,13 @@ export async function getMatchLeaderboard(
   }
 
   try {
+    const playerId = await getPlayerIdForSession(session.user.id);
+    if (!playerId) {
+      return { success: false, error: 'Player profile not found' };
+    }
+
     const matchResult = await db
-      .select({ format: matches.format })
+      .select({ format: matches.format, isPrivate: matches.isPrivate })
       .from(matches)
       .where(eq(matches.id, matchId))
       .limit(1);
@@ -583,6 +608,21 @@ export async function getMatchLeaderboard(
     const match = matchResult[0];
     if (!match) {
       return { success: false, error: 'Match not found' };
+    }
+
+    // Enforce access control for private matches
+    if (match.isPrivate) {
+      const isParticipant = await db
+        .select({ id: matchParticipants.id })
+        .from(matchParticipants)
+        .where(
+          and(eq(matchParticipants.matchId, matchId), eq(matchParticipants.playerId, playerId)),
+        )
+        .limit(1);
+
+      if (!isParticipant[0]) {
+        return { success: false, error: 'Match not found' };
+      }
     }
 
     // Get accepted participants with player info

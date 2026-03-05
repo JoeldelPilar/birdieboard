@@ -1,5 +1,6 @@
 'use server';
 
+import { auth } from '@/server/auth';
 import { db } from '@/lib/db';
 import { courses, courseTees, courseHoles } from '@/lib/drizzle/schema';
 import { searchCourses as apiSearchCourses, getCourseById } from '@/lib/golf-api';
@@ -34,6 +35,11 @@ export async function searchCourses(
   country?: string,
   limit?: number,
 ): Promise<ActionResponse<CourseSearchResult[]>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
   if (!query || query.trim().length < 2) {
     return { success: false, error: 'Query must be at least 2 characters' };
   }
@@ -73,6 +79,11 @@ export async function searchCourses(
 export async function getCourseDetails(
   courseId: string,
 ): Promise<ActionResponse<CourseWithDetails>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
   try {
     // 1. Check local DB by internal UUID
     const localById = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1);
@@ -152,6 +163,11 @@ export async function getCourseDetails(
 export async function getCachedCourse(
   courseId: string,
 ): Promise<ActionResponse<typeof courses.$inferSelect>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
   try {
     const result = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1);
 

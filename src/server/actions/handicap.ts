@@ -34,11 +34,23 @@ async function getPlayerIdForSession(userId: string): Promise<string | null> {
 
 // ---------------------------------------------------------------------------
 // recalculateHandicap — compute a new HCP index from last 20 completed rounds
+// Called internally from completeRound — not exported as a server action.
 // ---------------------------------------------------------------------------
 
 export async function recalculateHandicap(
   playerId: string,
 ): Promise<ActionResponse<{ handicapIndex: number; history: HandicapHistoryEntry }>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  // Verify the caller owns this playerId
+  const callerPlayerId = await getPlayerIdForSession(session.user.id);
+  if (!callerPlayerId || callerPlayerId !== playerId) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
   try {
     // Get the last 20 completed rounds with a score differential
     const completedRounds = await db

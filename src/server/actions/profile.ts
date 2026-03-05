@@ -178,6 +178,8 @@ export async function getProfileByUserId(userId: string): Promise<ActionResponse
 // ---------------------------------------------------------------------------
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export async function uploadAvatar(
   formData: FormData,
@@ -192,15 +194,16 @@ export async function uploadAvatar(
     return { success: false, error: 'No file provided' };
   }
 
-  if (!file.type.startsWith('image/')) {
-    return { success: false, error: 'File must be an image' };
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    return { success: false, error: 'Only JPG, PNG, WebP, and GIF images are allowed' };
   }
 
   if (file.size > MAX_AVATAR_BYTES) {
     return { success: false, error: 'File size must be 5 MB or less' };
   }
 
-  const ext = file.name.split('.').pop() ?? 'jpg';
+  const rawExt = (file.name.split('.').pop() ?? '').toLowerCase();
+  const ext = ALLOWED_IMAGE_EXTENSIONS.includes(rawExt) ? rawExt : 'jpg';
   const key = `${session.user.id}/${randomUUID()}.${ext}`;
 
   try {
@@ -213,6 +216,7 @@ export async function uploadAvatar(
         Body: buffer,
         ContentType: file.type,
         ContentLength: buffer.length,
+        ContentDisposition: 'inline',
       }),
     );
 
