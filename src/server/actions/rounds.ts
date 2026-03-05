@@ -10,6 +10,7 @@ import {
   completeRoundSchema,
 } from '@/lib/validations/round';
 import { calculateScoreDifferential, calculateStablefordPoints } from '@/lib/handicap';
+import { recalculateHandicap } from '@/server/actions/handicap';
 import type { StartRoundInput, SaveHoleScoreInput } from '@/lib/validations/round';
 import type { ActionResponse } from '@/types';
 
@@ -308,6 +309,11 @@ export async function completeRound(
     if (!updated) {
       return { success: false, error: 'Failed to complete round' };
     }
+
+    // Trigger handicap recalculation — best-effort, does not fail the round completion
+    await recalculateHandicap(playerId).catch(() => {
+      // Insufficient rounds for HCP calculation is expected — swallow the error silently
+    });
 
     return { success: true, data: updated };
   } catch (error) {
