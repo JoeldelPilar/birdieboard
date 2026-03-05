@@ -1,5 +1,4 @@
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
 import Nodemailer from 'next-auth/providers/nodemailer';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db';
@@ -11,8 +10,10 @@ import {
   playerProfiles,
 } from '@/lib/drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { authConfig } from './auth.config';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts as any, // eslint-disable-line
@@ -23,10 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: 'jwt',
   },
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
+    ...authConfig.providers,
     Nodemailer({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
@@ -39,12 +37,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       from: process.env.EMAIL_FROM ?? 'Birdieboard <noreply@birdieboard.app>',
     }),
   ],
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
-  },
   callbacks: {
+    ...authConfig.callbacks,
     async signIn() {
       return true;
     },
@@ -69,14 +63,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.id = token.id as string;
       session.user.hasProfile = token.hasProfile as boolean;
       return session;
-    },
-    authorized({ auth: session, request: { nextUrl } }) {
-      const isLoggedIn = !!session?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-
-      if (isOnDashboard) return isLoggedIn;
-
-      return true;
     },
   },
   events: {
