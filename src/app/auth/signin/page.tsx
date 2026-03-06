@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Input } from '@heroui/react';
 import { IconBrandGoogle, IconGolf, IconMail, IconArrowRight } from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { TextInput } from '@/components/ui/text-input';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -82,14 +82,13 @@ export default function SignInPage() {
           }}
           className="flex flex-col gap-4"
         >
-          <Input
-            type="email"
+          <TextInput
             label="Email"
+            id="email"
+            type="email"
             placeholder="you@example.com"
             value={email}
             onValueChange={setEmail}
-            variant="bordered"
-            labelPlacement="outside"
             isRequired
           />
           <button

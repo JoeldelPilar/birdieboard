@@ -5,12 +5,12 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Input,
   Select,
   SelectItem,
   Spinner,
   Switch,
 } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import {
   IconArrowLeft,
   IconCalendar,
@@ -204,7 +204,7 @@ export default function NewMatchPage() {
           </div>
         </CardHeader>
         <CardBody className="flex flex-col gap-4 px-6 pb-5">
-          <Input
+          <TextInput
             label="Match name"
             placeholder="e.g. Sunday Stableford"
             value={name}
@@ -217,7 +217,7 @@ export default function NewMatchPage() {
           />
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Input
+            <TextInput
               type="date"
               label="Date"
               value={matchDate}
@@ -227,16 +227,14 @@ export default function NewMatchPage() {
               }}
               isInvalid={!!fieldErrors.matchDate}
               errorMessage={fieldErrors.matchDate}
-              startContent={
-                <IconCalendar className="h-4 w-4 text-default-400" aria-hidden="true" />
-              }
+              startContent={<IconCalendar className="h-4 w-4" aria-hidden="true" />}
             />
-            <Input
+            <TextInput
               type="time"
               label="Tee time (optional)"
               value={teeTime}
               onValueChange={setTeeTime}
-              startContent={<IconClock className="h-4 w-4 text-default-400" aria-hidden="true" />}
+              startContent={<IconClock className="h-4 w-4" aria-hidden="true" />}
             />
           </div>
         </CardBody>
@@ -290,26 +288,23 @@ export default function NewMatchPage() {
             </div>
           ) : (
             <div>
-              <Input
+              <TextInput
                 label="Search courses"
                 placeholder="Course name, club, or city..."
                 value={query}
                 onValueChange={setQuery}
-                startContent={
-                  <IconSearch className="h-4 w-4 text-default-400" aria-hidden="true" />
-                }
+                startContent={<IconSearch className="h-4 w-4" aria-hidden="true" />}
                 endContent={
                   query.length > 0 ? (
                     <button
                       onClick={() => setQuery('')}
                       aria-label="Clear search"
-                      className="text-default-400"
+                      className="hover:text-white/60"
                     >
                       <IconX className="h-4 w-4" aria-hidden="true" />
                     </button>
                   ) : null
                 }
-                isClearable={false}
                 className="mb-3"
               />
 
@@ -393,7 +388,7 @@ export default function NewMatchPage() {
             </Select>
           </div>
 
-          <Input
+          <TextInput
             type="number"
             label="Max players"
             value={String(maxPlayers)}
@@ -406,7 +401,7 @@ export default function NewMatchPage() {
             max={20}
             isInvalid={!!fieldErrors.maxPlayers}
             errorMessage={fieldErrors.maxPlayers}
-            startContent={<IconUsers className="h-4 w-4 text-default-400" aria-hidden="true" />}
+            startContent={<IconUsers className="h-4 w-4" aria-hidden="true" />}
           />
 
           <div className="flex items-center justify-between rounded-xl border border-default-200 px-4 py-3">

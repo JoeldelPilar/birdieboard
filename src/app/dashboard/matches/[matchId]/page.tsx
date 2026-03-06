@@ -7,13 +7,13 @@ import {
   CardBody,
   CardHeader,
   Chip,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
 } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import {
   IconArrowLeft,
   IconCalendar,
@@ -414,7 +414,7 @@ export default function MatchDetailsPage() {
               </div>
             )}
             <div className="flex gap-2">
-              <Input
+              <TextInput
                 label="Email address"
                 placeholder="friend@example.com"
                 type="email"

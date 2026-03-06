@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, CardBody, Input, Spinner } from '@heroui/react';
+import { Card, CardBody, Spinner } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import { IconGolf, IconMapPin, IconSearch, IconX } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -83,24 +84,23 @@ export default function CoursesPage() {
 
       {/* Search controls */}
       <div className="mb-6 flex flex-col gap-3">
-        <Input
+        <TextInput
           label="Search courses"
           placeholder="Course name, club, or city..."
           value={query}
           onValueChange={setQuery}
-          startContent={<IconSearch className="h-4 w-4 text-default-400" aria-hidden="true" />}
+          startContent={<IconSearch className="h-4 w-4" aria-hidden="true" />}
           endContent={
             query.length > 0 ? (
               <button
                 onClick={handleClearQuery}
                 aria-label="Clear search"
-                className="text-default-400 hover:text-default-600"
+                className="hover:text-white/60"
               >
                 <IconX className="h-4 w-4" aria-hidden="true" />
               </button>
             ) : null
           }
-          isClearable={false}
         />
         <CountrySelect
           value={country}

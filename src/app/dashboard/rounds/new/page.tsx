@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Card, CardBody, CardHeader, Input, Spinner } from '@heroui/react';
+import { Button, Card, CardBody, CardHeader, Spinner } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import {
   IconArrowLeft,
   IconCalendar,
@@ -184,7 +185,7 @@ export default function NewRoundPage() {
           </div>
         </CardHeader>
         <CardBody className="px-6 pb-5">
-          <Input
+          <TextInput
             type="date"
             label="Date"
             value={roundDate}
@@ -275,26 +276,23 @@ export default function NewRoundPage() {
             <div>
               {/* Course search */}
               <div className="mb-3 flex flex-col gap-3">
-                <Input
+                <TextInput
                   label="Search courses"
                   placeholder="Course name, club, or city..."
                   value={query}
                   onValueChange={setQuery}
-                  startContent={
-                    <IconSearch className="h-4 w-4 text-default-400" aria-hidden="true" />
-                  }
+                  startContent={<IconSearch className="h-4 w-4 text-white/40" aria-hidden="true" />}
                   endContent={
                     query.length > 0 ? (
                       <button
                         onClick={() => setQuery('')}
                         aria-label="Clear search"
-                        className="text-default-400"
+                        className="text-white/40"
                       >
                         <IconX className="h-4 w-4" aria-hidden="true" />
                       </button>
                     ) : null
                   }
-                  isClearable={false}
                 />
                 <CountrySelect
                   value={country}

@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Card, CardBody, CardFooter, CardHeader, Input } from '@heroui/react';
+import { Button, Card, CardBody, CardFooter, CardHeader } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import { IconCheck, IconGolf, IconLoader2, IconMapPin, IconUser } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -178,7 +179,7 @@ export default function OnboardingPage() {
                 </p>
               </CardHeader>
               <CardBody className="px-6 py-4">
-                <Input
+                <TextInput
                   label="Display Name"
                   placeholder="How should other golfers know you?"
                   value={formData.displayName}
@@ -224,7 +225,7 @@ export default function OnboardingPage() {
                 </p>
               </CardHeader>
               <CardBody className="px-6 py-4">
-                <Input
+                <TextInput
                   label="Handicap Index"
                   placeholder="e.g. 12.3"
                   type="number"
@@ -236,7 +237,7 @@ export default function OnboardingPage() {
                   errorMessage={errors.handicap}
                   isInvalid={!!errors.handicap}
                   description="Decimal allowed, e.g. 12.3. You can update this anytime."
-                  endContent={<span className="text-sm text-default-400">HCP</span>}
+                  endContent={<span className="text-sm">HCP</span>}
                 />
               </CardBody>
               <CardFooter className="flex-col gap-3 px-6 pb-6">
@@ -290,7 +291,7 @@ export default function OnboardingPage() {
                   value={formData.country}
                   onChange={(v) => updateField('country', v)}
                 />
-                <Input
+                <TextInput
                   label="City"
                   placeholder="e.g. Stockholm"
                   value={formData.city}

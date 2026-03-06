@@ -2,7 +2,6 @@
 
 import {
   Button,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -12,6 +11,7 @@ import {
   SelectItem,
   SelectSection,
 } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import type { CreateClubInput, UpdateClubInput } from '@/lib/validations/bag';
@@ -209,7 +209,7 @@ export function ClubFormModal({
 
           {/* Brand + Model */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Input
+            <TextInput
               label="Brand"
               placeholder="e.g. Titleist"
               value={form.brand}
@@ -218,7 +218,7 @@ export function ClubFormModal({
               isInvalid={!!errors.brand}
               errorMessage={errors.brand}
             />
-            <Input
+            <TextInput
               label="Model"
               placeholder="e.g. TSR3"
               value={form.model}
@@ -230,7 +230,7 @@ export function ClubFormModal({
           </div>
 
           {/* Loft */}
-          <Input
+          <TextInput
             label="Loft"
             placeholder="e.g. 10.5"
             type="number"
@@ -242,12 +242,12 @@ export function ClubFormModal({
             isInvalid={!!errors.loft}
             errorMessage={errors.loft}
             description="Optional. Degrees."
-            endContent={<span className="text-sm text-default-400">&deg;</span>}
+            endContent={<span className="text-sm">&deg;</span>}
           />
 
           {/* Distances */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Input
+            <TextInput
               label="Carry Distance"
               placeholder="e.g. 240"
               type="number"
@@ -258,9 +258,9 @@ export function ClubFormModal({
               isInvalid={!!errors.carryDistance}
               errorMessage={errors.carryDistance}
               description="Optional."
-              endContent={<span className="text-sm text-default-400">m</span>}
+              endContent={<span className="text-sm">m</span>}
             />
-            <Input
+            <TextInput
               label="Total Distance"
               placeholder="e.g. 265"
               type="number"
@@ -271,7 +271,7 @@ export function ClubFormModal({
               isInvalid={!!errors.totalDistance}
               errorMessage={errors.totalDistance}
               description="Optional."
-              endContent={<span className="text-sm text-default-400">m</span>}
+              endContent={<span className="text-sm">m</span>}
             />
           </div>
 

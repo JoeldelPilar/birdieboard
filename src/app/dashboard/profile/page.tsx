@@ -1,15 +1,7 @@
 'use client';
 
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Input,
-  Switch,
-  Textarea,
-} from '@heroui/react';
+import { Button, Card, CardBody, CardHeader, Divider, Switch, Textarea } from '@heroui/react';
+import { TextInput } from '@/components/ui/text-input';
 import {
   IconCheck,
   IconGolf,
@@ -185,14 +177,14 @@ export default function ProfileEditPage() {
             </div>
           </CardHeader>
           <CardBody className="flex flex-col gap-4 px-6 pb-6">
-            <Input
+            <TextInput
               label="Email"
               value={session?.user?.email ?? ''}
               isReadOnly
               description="Email cannot be changed."
-              startContent={<IconLock className="h-4 w-4 text-default-400" aria-hidden="true" />}
+              startContent={<IconLock className="h-4 w-4" aria-hidden="true" />}
             />
-            <Input
+            <TextInput
               label="Display Name"
               placeholder="How other golfers know you"
               value={formData.displayName}
@@ -223,7 +215,7 @@ export default function ProfileEditPage() {
             </div>
           </CardHeader>
           <CardBody className="flex flex-col gap-4 px-6 pb-6">
-            <Input
+            <TextInput
               label="Handicap Index"
               placeholder="e.g. 12.3"
               type="number"
@@ -235,7 +227,7 @@ export default function ProfileEditPage() {
               isInvalid={!!errors.handicap}
               errorMessage={errors.handicap}
               description="Leave blank if unknown. Range: 0–54."
-              endContent={<span className="text-sm text-default-400">HCP</span>}
+              endContent={<span className="text-sm">HCP</span>}
             />
           </CardBody>
         </Card>
@@ -250,7 +242,7 @@ export default function ProfileEditPage() {
           </CardHeader>
           <CardBody className="flex flex-col gap-4 px-6 pb-6">
             <CountrySelect value={formData.country} onChange={(v) => updateField('country', v)} />
-            <Input
+            <TextInput
               label="City"
               placeholder="e.g. Stockholm"
               value={formData.city}
