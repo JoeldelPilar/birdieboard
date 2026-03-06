@@ -89,12 +89,7 @@ export default function SignInPage() {
             value={email}
             onValueChange={setEmail}
             variant="bordered"
-            classNames={{
-              inputWrapper:
-                'border-white/10 bg-white/5 hover:border-white/20 group-data-[focus=true]:border-golf-green/50',
-              input: 'text-white placeholder:text-white/30',
-              label: 'text-white/50',
-            }}
+            labelPlacement="outside"
             isRequired
           />
           <button

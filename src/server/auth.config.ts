@@ -7,6 +7,9 @@ import type { NextAuthConfig } from 'next-auth';
  * extends this with Nodemailer + adapter for server-side usage.
  */
 export const authConfig = {
+  session: {
+    strategy: 'jwt' as const,
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
