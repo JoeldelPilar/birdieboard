@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, CardBody, CardHeader, Divider, Input } from '@heroui/react';
-import { IconBrandGoogle, IconGolf, IconMail } from '@tabler/icons-react';
+import { Input } from '@heroui/react';
+import { IconBrandGoogle, IconGolf, IconMail, IconArrowRight } from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
@@ -21,85 +21,104 @@ export default function SignInPage() {
 
   if (emailSent) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-golf-green/5 p-4">
-        <Card className="w-full max-w-md">
-          <CardBody className="flex flex-col items-center gap-4 px-8 py-12">
-            <IconMail className="h-12 w-12 text-golf-green" />
-            <h1 className="text-2xl font-bold">Check your email</h1>
-            <p className="text-center text-sm text-default-500">
-              A sign-in link has been sent to <strong>{email}</strong>. Click the link in the email
-              to sign in.
+      <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
+        <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="rounded-xl bg-golf-green/10 p-4">
+              <IconMail className="h-10 w-10 text-golf-green icon-glow" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Check your email</h1>
+            <p className="text-sm leading-relaxed text-white/50">
+              A sign-in link has been sent to <strong className="text-white/80">{email}</strong>.
+              Click the link in the email to sign in.
             </p>
-            <Button variant="light" size="sm" onPress={() => setEmailSent(false)} className="mt-2">
+            <button
+              onClick={() => setEmailSent(false)}
+              className="btn-ghost mt-2 rounded-full px-5 py-2 text-sm"
+            >
               Use a different email
-            </Button>
-          </CardBody>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-golf-green/5 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col items-center gap-2 pb-0 pt-8">
-          <Link href="/" className="flex items-center gap-2">
-            <IconGolf className="h-10 w-10 text-golf-green" />
+    <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
+      <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+        {/* Header */}
+        <div className="mb-8 flex flex-col items-center gap-3 text-center">
+          <Link href="/" className="group">
+            <div className="rounded-xl bg-golf-green/10 p-3 transition-transform group-hover:scale-105">
+              <IconGolf className="h-8 w-8 text-golf-green icon-glow" />
+            </div>
           </Link>
-          <h1 className="text-2xl font-bold">Welcome to Birdieboard</h1>
-          <p className="text-sm text-default-500">Sign in to track your game</p>
-        </CardHeader>
-        <CardBody className="gap-4 px-8 pb-8 pt-6">
-          <Button
-            onPress={() => signIn('google', { callbackUrl: '/dashboard' })}
+          <h1 className="text-2xl font-bold text-white">Welcome to Birdieboard</h1>
+          <p className="text-sm text-white/40">Sign in to track your game</p>
+        </div>
+
+        {/* Google */}
+        <button
+          onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+          className="group mb-5 flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-medium text-white transition-all hover:border-white/20 hover:bg-white/[0.08] active:scale-[0.98]"
+        >
+          <IconBrandGoogle className="h-5 w-5 text-white/70 transition-colors group-hover:text-white" />
+          Continue with Google
+        </button>
+
+        {/* Divider */}
+        <div className="mb-5 flex items-center gap-4">
+          <div className="h-px flex-1 bg-white/10" />
+          <span className="text-xs font-medium text-white/25">OR</span>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        {/* Email magic link */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleEmailSignIn();
+          }}
+          className="flex flex-col gap-4"
+        >
+          <Input
+            type="email"
+            label="Email"
+            placeholder="you@example.com"
+            value={email}
+            onValueChange={setEmail}
             variant="bordered"
-            size="lg"
-            startContent={<IconBrandGoogle className="h-5 w-5" />}
-            className="w-full"
-          >
-            Continue with Google
-          </Button>
-
-          <div className="flex items-center gap-4">
-            <Divider className="flex-1" />
-            <span className="text-xs text-default-400">OR</span>
-            <Divider className="flex-1" />
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleEmailSignIn();
+            classNames={{
+              inputWrapper:
+                'border-white/10 bg-white/5 hover:border-white/20 group-data-[focus=true]:border-golf-green/50',
+              input: 'text-white placeholder:text-white/30',
+              label: 'text-white/50',
             }}
-            className="flex flex-col gap-3"
+            isRequired
+          />
+          <button
+            type="submit"
+            disabled={!email.trim() || isLoading}
+            className="btn-primary w-full rounded-xl py-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none"
           >
-            <Input
-              type="email"
-              label="Email"
-              placeholder="you@example.com"
-              value={email}
-              onValueChange={setEmail}
-              variant="bordered"
-              isRequired
-            />
-            <Button
-              type="submit"
-              variant="flat"
-              size="lg"
-              startContent={<IconMail className="h-5 w-5" />}
-              className="w-full"
-              isLoading={isLoading}
-              isDisabled={!email.trim()}
-            >
-              Sign in with Email
-            </Button>
-          </form>
+            {isLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            ) : (
+              <>
+                <IconMail className="h-5 w-5" />
+                Sign in with Email
+                <IconArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
 
-          <p className="mt-4 text-center text-xs text-default-400">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
-          </p>
-        </CardBody>
-      </Card>
+        {/* Legal */}
+        <p className="mt-6 text-center text-xs text-white/25">
+          By signing in, you agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Base Theme ─── */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -9,7 +10,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #050a05;
     --foreground: #ededed;
   }
 }
@@ -17,5 +18,256 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ─── Aurora Animated Background ─── */
+@layer utilities {
+  .aurora-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .aurora-bg::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(ellipse at 20% 50%, rgba(45, 106, 79, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(64, 145, 108, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 80%, rgba(137, 194, 217, 0.08) 0%, transparent 50%);
+    background-size: 200% 200%;
+    animation: aurora-shift 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .aurora-bg > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes aurora-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(0deg) scale(1);
+  }
+  33% {
+    background-position: 100% 50%;
+    transform: rotate(3deg) scale(1.05);
+  }
+  66% {
+    background-position: 50% 100%;
+    transform: rotate(-2deg) scale(1.02);
+  }
+}
+
+/* ─── Glassmorphism Cards ─── */
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-card-hover {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+      border-color 0.2s ease-out;
+  }
+
+  .glass-card-hover:hover {
+    transform: translateY(-4px);
+    border-color: rgba(45, 106, 79, 0.3);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), 0 0 24px rgba(45, 106, 79, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* ─── Modern Buttons ─── */
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #2d6a4f, #40916c);
+    color: #fff;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(45, 106, 79, 0.35), 0 0 16px rgba(45, 106, 79, 0.15);
+  }
+
+  .btn-primary:hover::before {
+    opacity: 1;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
+  }
+
+  .btn-ghost {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: #95d5b2;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(149, 213, 178, 0.2);
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(149, 213, 178, 0.08);
+    border-color: rgba(149, 213, 178, 0.4);
+    box-shadow: 0 0 16px rgba(149, 213, 178, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost:active {
+    transform: scale(0.97);
+  }
+
+  .btn-ghost-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
+  }
+
+  /* ─── Glow Text ─── */
+  .text-glow {
+    background: linear-gradient(135deg, #95d5b2, #2d6a4f, #89c2d9);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 6s ease-in-out infinite;
+  }
+
+  @keyframes text-shimmer {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* ─── Icon Glow ─── */
+  .icon-glow {
+    filter: drop-shadow(0 0 6px rgba(45, 106, 79, 0.4));
+    transition: filter 0.2s ease-out;
+  }
+
+  /* ─── Gradient Border (used on CTA) ─── */
+  .gradient-border {
+    position: relative;
+    background: transparent;
+    z-index: 0;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #2d6a4f, #89c2d9, #2d6a4f);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+  }
+
+  /* ─── Sidebar Active Pill ─── */
+  .nav-active {
+    background: rgba(45, 106, 79, 0.12);
+    color: #95d5b2;
+    box-shadow: inset 3px 0 0 #2d6a4f;
+  }
+
+  .nav-item {
+    transition: all 0.15s ease-out;
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateX(2px);
+  }
+}
+
+/* ─── Staggered Fade-In ─── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* ─── Pulse Dot (for live features) ─── */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(45, 106, 79, 0);
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense } from 'react';
-import { Card, CardBody, Button, Spinner } from '@heroui/react';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -19,23 +18,31 @@ function AuthErrorContent() {
   const message = errorMessages[error] ?? errorMessages.Default;
 
   return (
-    <Card className="w-full max-w-md">
-      <CardBody className="flex flex-col items-center gap-4 px-8 py-12">
-        <IconAlertTriangle className="h-12 w-12 text-danger" />
-        <h1 className="text-2xl font-bold">Sign in error</h1>
-        <p className="text-center text-sm text-default-500">{message}</p>
-        <Button as={Link} href="/auth/signin" variant="bordered" className="mt-2">
+    <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+      <div className="flex flex-col items-center gap-4 text-center">
+        <div className="rounded-xl bg-red-500/10 p-4">
+          <IconAlertTriangle className="h-10 w-10 text-red-400" />
+        </div>
+        <h1 className="text-2xl font-bold text-white">Sign in error</h1>
+        <p className="text-sm leading-relaxed text-white/50">{message}</p>
+        <Link href="/auth/signin" className="btn-ghost mt-2 rounded-full px-6 py-2 text-sm">
           Try again
-        </Button>
-      </CardBody>
-    </Card>
+        </Link>
+      </div>
+    </div>
   );
 }
 
 export default function AuthErrorPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-golf-green/5 p-4">
-      <Suspense fallback={<Spinner size="lg" />}>
+    <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-golf-green" />
+          </div>
+        }
+      >
         <AuthErrorContent />
       </Suspense>
     </div>
