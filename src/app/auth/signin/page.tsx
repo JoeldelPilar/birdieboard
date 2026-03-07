@@ -21,20 +21,21 @@ export default function SignInPage() {
 
   if (emailSent) {
     return (
-      <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
-        <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-lg animate-fade-in-up">
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="rounded-xl bg-golf-green/10 p-4">
-              <IconMail className="h-10 w-10 text-golf-green icon-glow" />
+              <IconMail className="h-10 w-10 text-golf-green" aria-hidden="true" />
             </div>
-            <h1 className="text-2xl font-bold text-white">Check your email</h1>
-            <p className="text-sm leading-relaxed text-white/50">
-              A sign-in link has been sent to <strong className="text-white/80">{email}</strong>.
-              Click the link in the email to sign in.
+            <h1 className="text-2xl font-bold text-gray-900">Check your email</h1>
+            <p className="text-sm leading-relaxed text-gray-600">
+              A sign-in link has been sent to{' '}
+              <strong className="font-semibold text-gray-900">{email}</strong>. Click the link in
+              the email to sign in.
             </p>
             <button
               onClick={() => setEmailSent(false)}
-              className="btn-ghost mt-2 rounded-full px-5 py-2 text-sm"
+              className="mt-2 rounded-xl px-5 py-2 text-sm font-medium text-golf-green hover:bg-golf-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
             >
               Use a different email
             </button>
@@ -45,33 +46,38 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
-      <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-lg animate-fade-in-up">
         {/* Header */}
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="group">
+          <Link
+            href="/"
+            className="group flex items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
+            aria-label="Birdieboard home"
+          >
             <div className="rounded-xl bg-golf-green/10 p-3 transition-transform group-hover:scale-105">
-              <IconGolf className="h-8 w-8 text-golf-green icon-glow" />
+              <IconGolf className="h-8 w-8 text-golf-green" aria-hidden="true" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome to Birdieboard</h1>
-          <p className="text-sm text-white/40">Sign in to track your game</p>
+          <span className="text-xl font-bold text-gray-900">Birdieboard</span>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
+          <p className="text-sm text-gray-500">Sign in to track your game</p>
         </div>
 
         {/* Google */}
         <button
           onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-          className="group mb-5 flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-medium text-white transition-all hover:border-white/20 hover:bg-white/[0.08] active:scale-[0.98]"
+          className="group mb-5 flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
         >
-          <IconBrandGoogle className="h-5 w-5 text-white/70 transition-colors group-hover:text-white" />
+          <IconBrandGoogle className="h-5 w-5 text-gray-500 transition-colors group-hover:text-gray-700" aria-hidden="true" />
           Continue with Google
         </button>
 
         {/* Divider */}
         <div className="mb-5 flex items-center gap-4">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-xs font-medium text-white/25">OR</span>
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-xs font-medium text-gray-400">OR</span>
+          <div className="h-px flex-1 bg-gray-200" />
         </div>
 
         {/* Email magic link */}
@@ -90,27 +96,47 @@ export default function SignInPage() {
             value={email}
             onValueChange={setEmail}
             isRequired
+            variant="light"
           />
           <button
             type="submit"
             disabled={!email.trim() || isLoading}
-            className="btn-primary w-full rounded-xl py-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none"
+            aria-label={isLoading ? 'Sending sign-in link, please wait' : undefined}
+            aria-busy={isLoading}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-golf-green px-4 py-3 font-semibold text-white shadow-sm transition-all hover:bg-golf-fairway hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:transform-none disabled:hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
           >
             {isLoading ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              <div
+                className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                aria-hidden="true"
+              />
             ) : (
               <>
-                <IconMail className="h-5 w-5" />
+                <IconMail className="h-5 w-5" aria-hidden="true" />
                 Sign in with Email
-                <IconArrowRight className="h-4 w-4" />
+                <IconArrowRight className="h-4 w-4" aria-hidden="true" />
               </>
             )}
           </button>
         </form>
 
         {/* Legal */}
-        <p className="mt-6 text-center text-xs text-white/25">
-          By signing in, you agree to our Terms of Service and Privacy Policy.
+        <p className="mt-6 text-center text-xs text-gray-500">
+          By signing in, you agree to our{' '}
+          <Link
+            href="#"
+            className="text-golf-green hover:text-golf-fairway underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-1 rounded"
+          >
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link
+            href="#"
+            className="text-golf-green hover:text-golf-fairway underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-1 rounded"
+          >
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </div>

@@ -18,14 +18,17 @@ function AuthErrorContent() {
   const message = errorMessages[error] ?? errorMessages.Default;
 
   return (
-    <div className="glass-card w-full max-w-md rounded-2xl p-8 animate-fade-in-up">
+    <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-lg animate-fade-in-up">
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="rounded-xl bg-red-500/10 p-4">
-          <IconAlertTriangle className="h-10 w-10 text-red-400" />
+        <div className="rounded-xl bg-red-50 p-4">
+          <IconAlertTriangle className="h-10 w-10 text-red-500" aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-bold text-white">Sign in error</h1>
-        <p className="text-sm leading-relaxed text-white/50">{message}</p>
-        <Link href="/auth/signin" className="btn-ghost mt-2 rounded-full px-6 py-2 text-sm">
+        <h1 className="text-2xl font-bold text-gray-900">Sign in error</h1>
+        <p className="text-sm leading-relaxed text-gray-600">{message}</p>
+        <Link
+          href="/auth/signin"
+          className="mt-2 inline-flex items-center rounded-xl bg-golf-green px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-golf-fairway hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
+        >
           Try again
         </Link>
       </div>
@@ -35,11 +38,11 @@ function AuthErrorContent() {
 
 export default function AuthErrorPage() {
   return (
-    <div className="aurora-bg flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Suspense
         fallback={
           <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-golf-green" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-golf-green" />
           </div>
         }
       >
