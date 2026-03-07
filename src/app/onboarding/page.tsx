@@ -47,7 +47,7 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -127,6 +127,9 @@ export default function OnboardingPage() {
       setServerError(result.error);
       return;
     }
+
+    // Force JWT refresh so middleware sees hasProfile=true before redirect
+    await update();
 
     setIsDone(true);
     setTimeout(() => {

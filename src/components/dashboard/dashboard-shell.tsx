@@ -42,7 +42,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#050a05]">
+    <div className="dashboard-shell flex min-h-screen bg-[#050a05]">
       {/* ─── Sidebar (Desktop) ─── */}
       <aside className="hidden w-64 flex-shrink-0 md:block">
         <div className="fixed flex h-screen w-64 flex-col border-r border-white/5 bg-[#060d06]">
