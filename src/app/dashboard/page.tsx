@@ -1,16 +1,25 @@
 import { auth } from '@/server/auth';
 import { getProfile } from '@/server/actions/profile';
+import { getDashboardStats } from '@/server/actions/rounds';
 import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 import { IconBackpack, IconGolf, IconSwords } from '@tabler/icons-react';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
   const session = await auth();
-  const profileResult = await getProfile();
+  const [profileResult, statsResult] = await Promise.all([
+    getProfile(),
+    getDashboardStats(),
+  ]);
 
   const profile = profileResult.success ? profileResult.data : null;
   const displayName = profile?.displayName ?? session?.user?.name ?? 'Golfer';
   const handicap = profile?.handicapIndex ? parseFloat(profile.handicapIndex) : null;
+
+  const stats = statsResult.success ? statsResult.data : null;
+  const completedRoundsCount = stats?.completedRoundsCount ?? 0;
+  const activeMatchesCount = stats?.activeMatchesCount ?? 0;
+  const recentRounds = stats?.recentRounds ?? [];
 
   return (
     <div>
@@ -56,7 +65,7 @@ export default async function DashboardPage() {
           </CardBody>
         </Card>
 
-        {/* Placeholder stat: Rounds played */}
+        {/* Rounds played */}
         <Card>
           <CardHeader className="px-6 pt-5 pb-2">
             <h2 className="text-sm font-semibold text-default-500 uppercase tracking-wide">
@@ -64,11 +73,11 @@ export default async function DashboardPage() {
             </h2>
           </CardHeader>
           <CardBody className="px-6 pb-6">
-            <span className="text-6xl font-extrabold leading-none">0</span>
+            <span className="text-6xl font-extrabold leading-none">{completedRoundsCount}</span>
           </CardBody>
         </Card>
 
-        {/* Placeholder stat: Active Matches */}
+        {/* Active Matches */}
         <Card>
           <CardHeader className="px-6 pt-5 pb-2">
             <h2 className="text-sm font-semibold text-default-500 uppercase tracking-wide">
@@ -76,7 +85,7 @@ export default async function DashboardPage() {
             </h2>
           </CardHeader>
           <CardBody className="px-6 pb-6">
-            <span className="text-6xl font-extrabold leading-none">0</span>
+            <span className="text-6xl font-extrabold leading-none">{activeMatchesCount}</span>
           </CardBody>
         </Card>
       </div>
@@ -145,28 +154,102 @@ export default async function DashboardPage() {
         <h2 id="recent-rounds-heading" className="mb-4 text-lg font-semibold">
           Recent Rounds
         </h2>
-        <Card>
-          <CardBody className="flex flex-col items-center gap-4 px-6 py-12 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-golf-green/10">
-              <IconGolf className="h-8 w-8 text-golf-green opacity-60" aria-hidden="true" />
-            </div>
-            <div>
-              <p className="font-semibold">No rounds yet</p>
-              <p className="mt-1 text-sm text-default-500">
-                Start your first round to see your history here.
-              </p>
-            </div>
-            <Button
-              as={Link}
-              href="/dashboard/rounds/new"
-              color="success"
-              variant="flat"
-              startContent={<IconGolf className="h-4 w-4" aria-hidden="true" />}
-            >
-              Play Your First Round
-            </Button>
-          </CardBody>
-        </Card>
+        {recentRounds.length > 0 ? (
+          <Card>
+            <CardBody className="px-0 py-0">
+              <ul className="divide-y divide-default-100">
+                {recentRounds.map((round) => {
+                  const scoreVsPar =
+                    round.grossScore != null && round.par != null
+                      ? round.grossScore - round.par
+                      : null;
+                  const scoreLabel =
+                    scoreVsPar != null
+                      ? scoreVsPar === 0
+                        ? 'E'
+                        : scoreVsPar > 0
+                          ? `+${scoreVsPar}`
+                          : String(scoreVsPar)
+                      : null;
+
+                  return (
+                    <li key={round.id}>
+                      <Link
+                        href={`/dashboard/rounds/${round.id}`}
+                        className="flex items-center justify-between px-6 py-4 transition-colors hover:bg-default-50"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{round.courseName}</p>
+                          <p className="mt-0.5 text-sm text-default-500">
+                            {new Date(round.roundDate).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                            {round.teeColor ? (
+                              <span className="ml-2 text-default-400">· {round.teeColor}</span>
+                            ) : null}
+                          </p>
+                        </div>
+                        <div className="ml-4 flex shrink-0 flex-col items-end gap-0.5">
+                          {round.grossScore != null ? (
+                            <span className="text-lg font-bold">{round.grossScore}</span>
+                          ) : null}
+                          {scoreLabel != null ? (
+                            <span
+                              className={`text-xs font-medium ${
+                                scoreVsPar === 0
+                                  ? 'text-default-500'
+                                  : scoreVsPar != null && scoreVsPar < 0
+                                    ? 'text-golf-green'
+                                    : 'text-danger'
+                              }`}
+                            >
+                              {scoreLabel}
+                            </span>
+                          ) : null}
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              {completedRoundsCount > 5 ? (
+                <div className="border-t border-default-100 px-6 py-3">
+                  <Link
+                    href="/dashboard/rounds"
+                    className="text-sm font-medium text-golf-green hover:text-golf-fairway"
+                  >
+                    View all {completedRoundsCount} rounds
+                  </Link>
+                </div>
+              ) : null}
+            </CardBody>
+          </Card>
+        ) : (
+          <Card>
+            <CardBody className="flex flex-col items-center gap-4 px-6 py-12 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-golf-green/10">
+                <IconGolf className="h-8 w-8 text-golf-green opacity-60" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="font-semibold">No rounds yet</p>
+                <p className="mt-1 text-sm text-default-500">
+                  Start your first round to see your history here.
+                </p>
+              </div>
+              <Button
+                as={Link}
+                href="/dashboard/rounds/new"
+                color="success"
+                variant="flat"
+                startContent={<IconGolf className="h-4 w-4" aria-hidden="true" />}
+              >
+                Play Your First Round
+              </Button>
+            </CardBody>
+          </Card>
+        )}
       </section>
     </div>
   );

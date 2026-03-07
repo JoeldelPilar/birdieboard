@@ -43,15 +43,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
-      // On initial sign-in, user object is present
+      // On initial sign-in, user object is present — persist the user id
       if (user?.id) {
         token.id = user.id as string;
+      }
 
-        // Check whether a player_profile exists for this user
+      // Re-check hasProfile whenever it is not yet true.
+      // This covers two cases:
+      //   1. Initial sign-in (token.id just set above, hasProfile not yet written)
+      //   2. Post-onboarding requests (hasProfile was false, profile now exists)
+      // Once hasProfile is true it is never re-queried, so there is no extra
+      // DB hit for users who have already completed onboarding.
+      if (token.id && !token.hasProfile) {
         const profile = await db
           .select({ id: playerProfiles.id })
           .from(playerProfiles)
-          .where(eq(playerProfiles.userId, user.id))
+          .where(eq(playerProfiles.userId, token.id as string))
           .limit(1);
 
         token.hasProfile = profile.length > 0;

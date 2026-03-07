@@ -2,8 +2,16 @@
 
 import { auth } from '@/server/auth';
 import { db } from '@/lib/db';
-import { playerProfiles, rounds, holeScores, courses, courseTees } from '@/lib/drizzle/schema';
-import { eq, and, desc, count } from 'drizzle-orm';
+import {
+  playerProfiles,
+  rounds,
+  holeScores,
+  courses,
+  courseTees,
+  matches,
+  matchParticipants,
+} from '@/lib/drizzle/schema';
+import { eq, and, desc, count, inArray } from 'drizzle-orm';
 import {
   startRoundSchema,
   saveHoleScoreSchema,
@@ -538,6 +546,93 @@ export async function abandonRound(
     }
 
     return { success: true, data: updated };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// getDashboardStats — lightweight stats for the dashboard overview
+// ---------------------------------------------------------------------------
+
+export type DashboardStats = {
+  completedRoundsCount: number;
+  activeMatchesCount: number;
+  recentRounds: RoundSummary[];
+};
+
+export async function getDashboardStats(): Promise<ActionResponse<DashboardStats>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  try {
+    const playerId = await getPlayerIdForSession(session.user.id);
+    if (!playerId) {
+      return { success: false, error: 'Player profile not found' };
+    }
+
+    // Run all three independent queries in parallel
+    const [completedCountResult, recentRows, activeCountResult] = await Promise.all([
+      // Query 1: count completed rounds for the player
+      db
+        .select({ total: count() })
+        .from(rounds)
+        .where(and(eq(rounds.playerId, playerId), eq(rounds.status, 'completed'))),
+
+      // Query 2: 5 most recent completed rounds with course and tee info
+      db
+        .select({
+          id: rounds.id,
+          roundDate: rounds.roundDate,
+          status: rounds.status,
+          grossScore: rounds.grossScore,
+          scoreDifferential: rounds.scoreDifferential,
+          courseName: courses.name,
+          teeColor: courseTees.color,
+          par: courseTees.par,
+        })
+        .from(rounds)
+        .innerJoin(courses, eq(rounds.courseId, courses.id))
+        .innerJoin(courseTees, eq(rounds.teeId, courseTees.id))
+        .where(and(eq(rounds.playerId, playerId), eq(rounds.status, 'completed')))
+        .orderBy(desc(rounds.roundDate))
+        .limit(5),
+
+      // Query 3: count active matches via single JOIN — avoids a two-step round-trip
+      // and eliminates a potentially large IN(...) clause
+      db
+        .select({ total: count() })
+        .from(matches)
+        .innerJoin(matchParticipants, eq(matchParticipants.matchId, matches.id))
+        .where(
+          and(
+            eq(matchParticipants.playerId, playerId),
+            inArray(matches.status, ['open', 'in_progress']),
+          ),
+        ),
+    ]);
+
+    const completedRoundsCount = completedCountResult[0]?.total ?? 0;
+    const activeMatchesCount = activeCountResult[0]?.total ?? 0;
+
+    const recentRounds: RoundSummary[] = recentRows.map((row) => ({
+      id: row.id,
+      roundDate: row.roundDate,
+      status: row.status,
+      grossScore: row.grossScore,
+      scoreDifferential: row.scoreDifferential,
+      courseName: row.courseName,
+      teeColor: row.teeColor,
+      par: row.par,
+    }));
+
+    return {
+      success: true,
+      data: { completedRoundsCount, activeMatchesCount, recentRounds },
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unexpected error occurred';
     return { success: false, error: message };
