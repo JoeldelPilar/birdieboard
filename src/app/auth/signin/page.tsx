@@ -69,7 +69,10 @@ export default function SignInPage() {
           onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
           className="group mb-5 flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
         >
-          <IconBrandGoogle className="h-5 w-5 text-gray-500 transition-colors group-hover:text-gray-700" aria-hidden="true" />
+          <IconBrandGoogle
+            className="h-5 w-5 text-gray-500 transition-colors group-hover:text-gray-700"
+            aria-hidden="true"
+          />
           Continue with Google
         </button>
 

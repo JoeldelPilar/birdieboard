@@ -6,10 +6,7 @@ export function FinalCta() {
     <section className="py-24 px-6" aria-labelledby="final-cta-heading">
       <div className="max-w-4xl mx-auto">
         <div className="bg-golf-green rounded-2xl md:rounded-3xl px-8 md:px-16 py-16 md:py-20 text-center">
-          <h2
-            id="final-cta-heading"
-            className="text-3xl md:text-4xl font-bold text-white mb-4"
-          >
+          <h2 id="final-cta-heading" className="text-3xl md:text-4xl font-bold text-white mb-4">
             Ready to Join the Fairway?
           </h2>
 

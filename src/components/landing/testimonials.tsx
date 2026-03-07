@@ -88,13 +88,7 @@ export function Testimonials() {
   );
 }
 
-function TestimonialCard({
-  testimonial,
-  index,
-}: {
-  testimonial: Testimonial;
-  index: number;
-}) {
+function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; index: number }) {
   const prefersReduced = useReducedMotion();
   const cardVariants = prefersReduced ? reducedVariants : motionVariants;
 

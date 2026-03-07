@@ -7,10 +7,7 @@ import Link from 'next/link';
 
 export default async function DashboardPage() {
   const session = await auth();
-  const [profileResult, statsResult] = await Promise.all([
-    getProfile(),
-    getDashboardStats(),
-  ]);
+  const [profileResult, statsResult] = await Promise.all([getProfile(), getDashboardStats()]);
 
   const profile = profileResult.success ? profileResult.data : null;
   const displayName = profile?.displayName ?? session?.user?.name ?? 'Golfer';
