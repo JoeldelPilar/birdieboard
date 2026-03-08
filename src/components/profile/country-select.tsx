@@ -58,6 +58,7 @@ export function CountrySelect({
     <Autocomplete
       label={label}
       placeholder={placeholder}
+      labelPlacement="outside"
       defaultSelectedKey={value}
       selectedKey={value ?? null}
       onSelectionChange={(key) => {

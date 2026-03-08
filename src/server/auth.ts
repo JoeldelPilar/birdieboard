@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import Nodemailer from 'next-auth/providers/nodemailer';
+import Credentials from 'next-auth/providers/credentials';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db';
 import {
@@ -10,6 +10,8 @@ import {
   playerProfiles,
 } from '@/lib/drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { compare } from 'bcryptjs';
+import { signInCredentialsSchema } from '@/lib/validations/auth';
 import { authConfig } from './auth.config';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -25,16 +27,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers: [
     ...authConfig.providers,
-    Nodemailer({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT ?? '587'),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
+    Credentials({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
-      from: process.env.EMAIL_FROM ?? 'Birdieboard <noreply@birdieboard.app>',
+      async authorize(credentials) {
+        const validated = signInCredentialsSchema.safeParse(credentials);
+        if (!validated.success) return null;
+
+        const { email, password } = validated.data;
+
+        const [user] = await db
+          .select({
+            id: users.id,
+            name: users.name,
+            email: users.email,
+            image: users.image,
+            password: users.password,
+          })
+          .from(users)
+          .where(eq(users.email, email))
+          .limit(1);
+
+        if (!user) return null;
+
+        // Google-only users won't have a password set
+        if (!user.password) return null;
+
+        const passwordMatch = await compare(password, user.password);
+        if (!passwordMatch) return null;
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+      },
     }),
   ],
   callbacks: {

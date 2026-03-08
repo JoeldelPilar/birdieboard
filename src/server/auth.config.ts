@@ -2,9 +2,9 @@ import Google from 'next-auth/providers/google';
 import type { NextAuthConfig } from 'next-auth';
 
 /**
- * Edge-compatible auth config (no Node.js-only providers like Nodemailer).
+ * Edge-compatible auth config (no Node.js-only providers).
  * Used by middleware for route protection. The full config in auth.ts
- * extends this with Nodemailer + adapter for server-side usage.
+ * extends this with Credentials + adapter for server-side usage.
  */
 export const authConfig = {
   session: {
@@ -20,7 +20,6 @@ export const authConfig = {
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
   },
   callbacks: {
     authorized({ auth: session, request: { nextUrl } }) {

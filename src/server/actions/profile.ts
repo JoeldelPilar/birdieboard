@@ -64,7 +64,8 @@ export async function createProfile(
     if (message.includes('unique') || message.includes('duplicate')) {
       return { success: false, error: 'Profile already exists for this account' };
     }
-    return { success: false, error: message };
+    console.error('[createProfile]', message);
+    return { success: false, error: 'Failed to create profile. Please try again.' };
   }
 }
 
@@ -112,7 +113,8 @@ export async function updateProfile(
     return { success: true, data: updated };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-    return { success: false, error: message };
+    console.error('[updateProfile]', message);
+    return { success: false, error: 'Failed to update profile. Please try again.' };
   }
 }
 

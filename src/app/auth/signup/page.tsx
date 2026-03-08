@@ -1,46 +1,56 @@
 'use client';
 
 import { useState } from 'react';
-import { IconBrandGoogle, IconGolf, IconArrowRight, IconLock, IconMail } from '@tabler/icons-react';
+import {
+  IconBrandGoogle,
+  IconGolf,
+  IconArrowRight,
+  IconLock,
+  IconMail,
+  IconUser,
+} from '@tabler/icons-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { TextInput } from '@/components/ui/text-input';
+import { signUp } from '@/server/actions/auth';
 
-export default function SignInPage() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
-  const errorParam = searchParams.get('error');
-
+export default function SignUpPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(
-    errorParam === 'CredentialsSignin' ? 'Invalid email or password' : null,
-  );
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleCredentialsSignIn(e: React.FormEvent) {
+  async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    if (!name.trim() || !email.trim() || !password.trim()) return;
 
     setIsLoading(true);
     setError(null);
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-      callbackUrl,
-    });
+    const result = await signUp({ name: name.trim(), email: email.trim(), password });
 
-    if (result?.error) {
-      setError('Invalid email or password');
+    if (!result.success) {
+      setError(result.error);
       setIsLoading(false);
       return;
     }
 
-    // Successful sign-in — redirect
-    window.location.href = result?.url ?? callbackUrl;
+    // Account created — sign in automatically
+    const signInResult = await signIn('credentials', {
+      email: email.trim(),
+      password,
+      redirect: false,
+      callbackUrl: '/onboarding',
+    });
+
+    if (signInResult?.error) {
+      setError('Account created but sign-in failed. Please sign in manually.');
+      setIsLoading(false);
+      return;
+    }
+
+    window.location.href = signInResult?.url ?? '/onboarding';
   }
 
   return (
@@ -58,13 +68,13 @@ export default function SignInPage() {
             </div>
           </Link>
           <span className="text-xl font-bold text-gray-900">Birdieboard</span>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-          <p className="text-sm text-gray-500">Sign in to track your game</p>
+          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
+          <p className="text-sm text-gray-500">Start tracking your golf game today</p>
         </div>
 
         {/* Google */}
         <button
-          onClick={() => signIn('google', { callbackUrl })}
+          onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
           className="group mb-5 flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
         >
           <IconBrandGoogle
@@ -88,8 +98,21 @@ export default function SignInPage() {
           </div>
         )}
 
-        {/* Email + Password */}
-        <form onSubmit={handleCredentialsSignIn} className="flex flex-col gap-4">
+        {/* Sign up form */}
+        <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+          <TextInput
+            label="Name"
+            id="name"
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onValueChange={setName}
+            isRequired
+            autoFocus
+            variant="light"
+            description="Min 2 characters"
+            startContent={<IconUser className="h-4 w-4 text-gray-400" aria-hidden="true" />}
+          />
           <TextInput
             label="Email"
             id="email"
@@ -98,7 +121,6 @@ export default function SignInPage() {
             value={email}
             onValueChange={setEmail}
             isRequired
-            autoFocus
             variant="light"
             startContent={<IconMail className="h-4 w-4 text-gray-400" aria-hidden="true" />}
           />
@@ -106,17 +128,18 @@ export default function SignInPage() {
             label="Password"
             id="password"
             type="password"
-            placeholder="Your password"
+            placeholder="Min 8 characters"
             value={password}
             onValueChange={setPassword}
             isRequired
             variant="light"
+            description="At least 8 characters"
             startContent={<IconLock className="h-4 w-4 text-gray-400" aria-hidden="true" />}
           />
           <button
             type="submit"
-            disabled={!email.trim() || !password.trim() || isLoading}
-            aria-label={isLoading ? 'Signing in, please wait' : undefined}
+            disabled={!name.trim() || !email.trim() || !password.trim() || isLoading}
+            aria-label={isLoading ? 'Creating account, please wait' : undefined}
             aria-busy={isLoading}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-golf-green px-4 py-3 font-semibold text-white shadow-sm transition-all hover:bg-golf-fairway hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:transform-none disabled:hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-2"
           >
@@ -127,27 +150,27 @@ export default function SignInPage() {
               />
             ) : (
               <>
-                Sign in
+                Create account
                 <IconArrowRight className="h-4 w-4" aria-hidden="true" />
               </>
             )}
           </button>
         </form>
 
-        {/* Sign up link */}
+        {/* Sign in link */}
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{' '}
+          Already have an account?{' '}
           <Link
-            href="/auth/signup"
+            href="/auth/signin"
             className="font-semibold text-golf-green hover:text-golf-fairway underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-1 rounded"
           >
-            Create one
+            Sign in
           </Link>
         </p>
 
         {/* Legal */}
         <p className="mt-4 text-center text-xs text-gray-500">
-          By signing in, you agree to our{' '}
+          By creating an account, you agree to our{' '}
           <Link
             href="#"
             className="text-golf-green hover:text-golf-fairway underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golf-green focus-visible:ring-offset-1 rounded"
